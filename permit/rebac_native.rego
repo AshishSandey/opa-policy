@@ -53,9 +53,10 @@ assignment_matches_role_key(role_key, res_fq, role_name) {
 # --- permit.rebac: roles for current decision (merged into scoped_users_obj) ---
 
 # Returns same shape as permit_rebac.roles: { "roles": [...], "debugger": object }.
-roles_result(input) := {"roles": role_list, "debugger": dbg} {
-	user := sprintf("user:%s", [input.user.key])
-	tenant := input.resource.tenant
+# Parameter cannot be named "input" (shadows the input document in Rego).
+roles_result(inp) := {"roles": role_list, "debugger": dbg} {
+	user := sprintf("user:%s", [inp.user.key])
+	tenant := inp.resource.tenant
 	assigns := object.get(data.role_assignments, user, {})
 	role_list := [r |
 		some res, role_names in assigns
@@ -69,8 +70,8 @@ roles_result(input) := {"roles": role_list, "debugger": dbg} {
 
 # --- permit.user_permissions: map resource -> ["Resource#Role", ...] ---
 
-all_roles(input) := m {
-	user := sprintf("user:%s", [input.user.key])
+all_roles(inp) := m {
+	user := sprintf("user:%s", [inp.user.key])
 	assigns := object.get(data.role_assignments, user, {})
 	m := {res: arr |
 		some res, role_names in assigns
