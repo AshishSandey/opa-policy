@@ -2,7 +2,8 @@ package permit.bulk
 
 import future.keywords
 
-# Batch PDP: same semantics as N calls to POST /v1/data/permit/root with shared user (and optional context).
+# Batch PDP: each entry mirrors the full document at POST /v1/data/permit/root for that query
+# (allow, allowing_sources, debug when enabled, etc.).
 #
 # Input:
 #   user: { "key": "<user id>" }
@@ -11,15 +12,15 @@ import future.keywords
 #     { "action": "<action>", "resource": { "type": "...", "tenant": "...", "key": "..." } },
 #     ...
 #   ]
-#   (resource.key is optional when not scoping to an instance.)
 #
 # Output document:
-#   decisions: [ true, false, ... ]  # same order and length as queries
+#   results: [ { "allow": ..., "allowing_sources": ..., "debug": ... }, ... ]  # same order as queries
+#   decisions: [ true, false, ... ]  # convenience: each results[i].allow (legacy clients)
 
-decisions := [allowed |
+results := [doc |
 	some i
 	q := qs[i]
-	allowed := eval_one(q)
+	doc := root_doc(q)
 ] {
 	qs := safe_queries
 }
@@ -29,12 +30,17 @@ safe_queries := q {
 	is_array(q)
 } else := []
 
-eval_one(q) := allowed {
+root_doc(q) := doc {
 	inp := {
 		"user": input.user,
 		"action": q.action,
 		"resource": q.resource,
 		"context": object.get(input, "context", {}),
 	}
-	allowed := data.permit.root.allow with input as inp
+	doc := data.permit.root with input as inp
 }
+
+decisions := [r.allow |
+	some i
+	r := results[i]
+]
