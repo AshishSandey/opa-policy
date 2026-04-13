@@ -14,10 +14,9 @@ import future.keywords
 #   ]
 #
 # Output document:
-#   results: [ { "allow": ..., "allowing_sources": ..., "debug": ... }, ... ]  # same order as queries
-#   decisions: [ true, false, ... ]  # convenience: each results[i].allow (legacy clients)
+#   decisions: [ { ... }, ... ]  # same order as queries; each object is data.permit.root for that query
 
-results := [doc |
+decisions := [doc |
 	some i
 	q := qs[i]
 	doc := root_doc(q)
@@ -39,8 +38,3 @@ root_doc(q) := doc {
 	}
 	doc := data.permit.root with input as inp
 }
-
-decisions := [r.allow |
-	some i
-	r := results[i]
-]
