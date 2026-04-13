@@ -2,6 +2,7 @@ package permit.authorized_users
 
 import data.permit.root.debugger_activated
 import data.permit.abac_authorized_users
+import data.permit.rebac_native as rebac_native
 
 import future.keywords.in
 
@@ -31,7 +32,7 @@ format_rebac_assignment(user, root_grant) := {
 default linked_users := {}
 
 
-linked_users := permit_rebac.linked_users(input.resource)
+linked_users := rebac_native.linked_users(input.resource)
 
 
 

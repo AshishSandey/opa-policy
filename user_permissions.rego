@@ -1,8 +1,7 @@
 package permit.user_permissions
 
-
 import data.permit.abac_user_permissions
-
+import data.permit.rebac_native as rebac_native
 
 import future.keywords.in
 
@@ -162,7 +161,7 @@ default __rebac_roles := {}
 
 
 
-__rebac_roles := permit_rebac.all_roles(input)
+__rebac_roles := rebac_native.all_roles(input)
 
 
 
